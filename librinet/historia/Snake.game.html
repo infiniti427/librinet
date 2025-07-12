@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- saved from url=(6595)data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%0A%3Chtml%20lang%3D%22en%22%3E%0A%3Chead%3E%0A%20%20%20%20%3Cmeta%20charset%3D%22UTF-8%22%3E%0A%20%20%20%20%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%0A%20%20%20%20%3Ctitle%3ESnake%20Game%3C%2Ftitle%3E%0A%20%20%20%20%3Cstyle%3E%0A%20%20%20%20%20%20%20%20canvas%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20margin%3A%200%20auto%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20border%3A%201px%20solid%20black%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%23score%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20font-size%3A%2024px%3B%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%0A%3C%2Fhead%3E%0A%3Cbody%3E%0A%20%20%20%20%3Cdiv%20id%3D%22score%22%3EScore%3A%200%3C%2Fdiv%3E%0A%20%20%20%20%3Cbutton%20id%3D%22restartButton%22%20style%3D%22display%3A%20block%3B%20margin%3A%2010px%20auto%3B%22%3EReiniciar%20Juego%3C%2Fbutton%3E%0A%20%20%20%20%3Ccanvas%20id%3D%22gameCanvas%22%3E%3C%2Fcanvas%3E%0A%20%20%20%20%3Cscript%3E%0A%20%20%20%20%20%20%20%20const%20canvas%20%3D%20document.getElementById('gameCanvas')%3B%0A%20%20%20%20%20%20%20%20const%20ctx%20%3D%20canvas.getContext('2d')%3B%0A%20%20%20%20%20%20%20%20canvas.width%20%3D%20400%3B%0A%20%20%20%20%20%20%20%20canvas.height%20%3D%20400%3B%0A%0A%20%20%20%20%20%20%20%20let%20snake%20%3D%20%5B%7Bx%3A%20200%2C%20y%3A%20200%7D%5D%3B%0A%20%20%20%20%20%20%20%20let%20direction%20%3D%20%7Bx%3A%2010%2C%20y%3A%200%7D%3B%0A%20%20%20%20%20%20%20%20let%20food%20%3D%20%7Bx%3A%200%2C%20y%3A%200%7D%3B%0A%20%20%20%20%20%20%20%20let%20score%20%3D%200%3B%0A%0A%20%20%20%20%20%20%20%20placeFood()%3B%0A%0A%20%20%20%20%20%20%20%20document.addEventListener('keydown'%2C%20changeDirection)%3B%0A%20%20%20%20%20%20%20%20document.getElementById('restartButton').addEventListener('click'%2C%20resetGame)%3B%0A%0A%20%20%20%20%20%20%20%20function%20changeDirection(event)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20switch(event.key)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20case%20'ArrowUp'%3A%20if%20(direction.y%20%3D%3D%3D%200)%20direction%20%3D%20%7Bx%3A%200%2C%20y%3A%20-10%7D%3B%20break%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20case%20'ArrowDown'%3A%20if%20(direction.y%20%3D%3D%3D%200)%20direction%20%3D%20%7Bx%3A%200%2C%20y%3A%2010%7D%3B%20break%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20case%20'ArrowLeft'%3A%20if%20(direction.x%20%3D%3D%3D%200)%20direction%20%3D%20%7Bx%3A%20-10%2C%20y%3A%200%7D%3B%20break%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20case%20'ArrowRight'%3A%20if%20(direction.x%20%3D%3D%3D%200)%20direction%20%3D%20%7Bx%3A%2010%2C%20y%3A%200%7D%3B%20break%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20function%20placeFood()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20food.x%20%3D%20Math.floor(Math.random()%20*%2040)%20*%2010%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20food.y%20%3D%20Math.floor(Math.random()%20*%2040)%20*%2010%3B%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20snake.forEach(part%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20(part.x%20%3D%3D%3D%20food.x%20%26%26%20part.y%20%3D%3D%3D%20food.y)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20placeFood()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20function%20gameLoop()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20let%20head%20%3D%20%7Bx%3A%20snake%5B0%5D.x%20%2B%20direction.x%2C%20y%3A%20snake%5B0%5D.y%20%2B%20direction.y%7D%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20snake.unshift(head)%3B%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20(head.x%20%3D%3D%3D%20food.x%20%26%26%20head.y%20%3D%3D%3D%20food.y)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20score%2B%2B%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20document.getElementById('score').innerText%20%3D%20'Score%3A%20'%20%2B%20score%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20placeFood()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%20else%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20snake.pop()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20(head.x%20%3C%200%20%7C%7C%20head.x%20%3E%3D%20canvas.width%20%7C%7C%20head.y%20%3C%200%20%7C%7C%20head.y%20%3E%3D%20canvas.height)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20alert('Game%20Over')%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20resetGame()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20for%20(let%20i%20%3D%201%3B%20i%20%3C%20snake.length%3B%20i%2B%2B)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20(head.x%20%3D%3D%3D%20snake%5Bi%5D.x%20%26%26%20head.y%20%3D%3D%3D%20snake%5Bi%5D.y)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20alert('Game%20Over')%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20resetGame()%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20return%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20%20%20%20%20ctx.clearRect(0%2C%200%2C%20canvas.width%2C%20canvas.height)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20ctx.fillStyle%20%3D%20'green'%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20snake.forEach(part%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ctx.fillRect(part.x%2C%20part.y%2C%2010%2C%2010)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D)%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20ctx.fillStyle%20%3D%20'red'%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20ctx.fillRect(food.x%2C%20food.y%2C%2010%2C%2010)%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20function%20resetGame()%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20snake%20%3D%20%5B%7Bx%3A%20200%2C%20y%3A%20200%7D%5D%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20direction%20%3D%20%7Bx%3A%2010%2C%20y%3A%200%7D%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20score%20%3D%200%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20document.getElementById('score').innerText%20%3D%20'Score%3A%20'%20%2B%20score%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20placeFood()%3B%0A%20%20%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20%20%20setInterval(gameLoop%2C%20100)%3B%0A%20%20%20%20%3C%2Fscript%3E%0A%3C%2Fbody%3E%0A%3C%2Fhtml%3E -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid black;
+        }
+        #score {
+            text-align: center;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <button id="restartButton" style="display: block; margin: 10px auto;">Reiniciar Juego</button>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 400;
+
+        let snake = [{x: 200, y: 200}];
+        let direction = {x: 10, y: 0};
+        let food = {x: 0, y: 0};
+        let score = 0;
+
+        placeFood();
+
+        document.addEventListener('keydown', changeDirection);
+        document.getElementById('restartButton').addEventListener('click', resetGame);
+
+        function changeDirection(event) {
+            switch(event.key) {
+                case 'ArrowUp': if (direction.y === 0) direction = {x: 0, y: -10}; break;
+                case 'ArrowDown': if (direction.y === 0) direction = {x: 0, y: 10}; break;
+                case 'ArrowLeft': if (direction.x === 0) direction = {x: -10, y: 0}; break;
+                case 'ArrowRight': if (direction.x === 0) direction = {x: 10, y: 0}; break;
+            }
+        }
+
+        function placeFood() {
+            food.x = Math.floor(Math.random() * 40) * 10;
+            food.y = Math.floor(Math.random() * 40) * 10;
+
+            snake.forEach(part => {
+                if (part.x === food.x && part.y === food.y) {
+                    placeFood();
+                }
+            });
+        }
+
+        function gameLoop() {
+            let head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                document.getElementById('score').innerText = 'Score: ' + score;
+                placeFood();
+            } else {
+                snake.pop();
+            }
+
+            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+                alert('Game Over');
+                resetGame();
+                return;
+            }
+
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    alert('Game Over');
+                    resetGame();
+                    return;
+                }
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'green';
+            snake.forEach(part => {
+                ctx.fillRect(part.x, part.y, 10, 10);
+            });
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x, food.y, 10, 10);
+        }
+
+        function resetGame() {
+            snake = [{x: 200, y: 200}];
+            direction = {x: 10, y: 0};
+            score = 0;
+            document.getElementById('score').innerText = 'Score: ' + score;
+            placeFood();
+        }
+
+        setInterval(gameLoop, 100);
+    </script>
+
+</body></html>
