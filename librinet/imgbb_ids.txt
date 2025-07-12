@@ -72,3 +72,6 @@ Prompt: "Envision a serene night sky dominated by a radiant full moon, casting a
 
 moon", ImgBB ID: hR2SS41k/Envision-a-serene-night-sky-dominated-by-a-radiant-full-moon-casting-a-soft-silvery-glow-over-a-tran.jpg
 Prompt: "With+my+Own+Photo", ImgBB ID: BVM2tHWX/With-my-Own-Photo.jpg
+Prompt: "Create an image of an elegantly designed carpet showcased in a chic Parisian apartment. The scene is illuminated by soft, natural light filtering through large, ornate windows, casting gentle shadows that enhance the room's sophistication. Rich textures of the carpet contrast beautifully against the hardwood flooring, while the walls feature subtle pastel hues complemented by tasteful artwork. Intricate details of the room's decor, such as a vintage chandelier and plush furniture, highlight the luxurious atmosphere. The overall mood is one of refined elegance and comfort, rendered in ultra-realistic 8K resolution that captures every minute detail with stunning clarity.
+
+créer moi une photo de tapis mis en valeur dans un appartement parisien chic avec de belle lumiére unltraréaliste 8k, best quality, high resolution, ultra detailed, 8k uhd, highly detailed", ImgBB ID: 1Y2yYwqy/Create-an-image-of-an-elegantly-designed-carpet-showcased-in-a-chic-Parisian-apartment-The-scene-is.jpg
