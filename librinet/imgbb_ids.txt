@@ -84,3 +84,4 @@ Prompt: "Make a bow-tie out of dark-cyan cloth with many small bright-magenta pa
 Prompt: "In relevant color A Shakti in oil painting style as a single, continuous subject with no separate or isolated parts in a vector graphic style with solid black or dark outline and white flat solid background with no shadows or gradients", ImgBB ID: n8mYQF7J/In-relevant-color-A-Shakti-in-oil-painting-style-as-a-single-continuous-subject-with-no-separate-or.jpg
 Prompt: "A symbolic representation of dreams transforming into opportunities, visualized as birds rising from ashes, set against a backdrop of hope and light breaking through darkness.", ImgBB ID: s9zKNDTQ/A-symbolic-representation-of-dreams-transforming-into-opportunities-visualized-as-birds-rising-from.jpg
 Prompt: "Atom", ImgBB ID: 4ZJDk6TZ/Atom.jpg
+Prompt: "Mike+cheap+ss", ImgBB ID: S7QvCWp8/Mike-cheap-ss.jpg
