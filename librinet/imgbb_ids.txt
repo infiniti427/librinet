@@ -71,3 +71,4 @@ Prompt: "Cinematic shot, man in his late 30s, relaxed posture, soft lighting, me
 Prompt: "Envision a serene night sky dominated by a radiant full moon, casting a soft, silvery glow over a tranquil landscape. The moon's surface showcases intricate craters and glowing highlands, shimmering like a pearl against the dark canvas of the heavens. Wispy clouds drift lazily past, partially obscuring its luminescence, while a blanket of twinkling stars surrounds it, creating a breathtaking celestial spectacle. Below, a calm lake reflects the moonlight, creating rippling patterns of light on the water's surface, enhancing the peaceful and enchanting atmosphere of the scene.
 
 moon", ImgBB ID: hR2SS41k/Envision-a-serene-night-sky-dominated-by-a-radiant-full-moon-casting-a-soft-silvery-glow-over-a-tran.jpg
+Prompt: "With+my+Own+Photo", ImgBB ID: BVM2tHWX/With-my-Own-Photo.jpg
