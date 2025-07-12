@@ -27,3 +27,4 @@ Prompt: "A frost-covered puddle glimmers under the soft glow of a silvery full m
 
 A+frozen+puddle+captures+the+moon's+echo.,+natural+shadows", ImgBB ID: svn7LLCb/A-frost-covered-puddle-glimmers-under-the-soft-glow-of-a-silvery-full-moon-reflecting-its-ethereal-l.jpg
 Prompt: "hola", ImgBB ID: MyYZQ5RX/hola.jpg
+Prompt: "Create an interior in the style of Minmmalism of a modern apartment", ImgBB ID: vvQDLxR3/Create-an-interior-in-the-style-of-Minmmalism-of-a-modern-apartment.jpg
