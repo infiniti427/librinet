@@ -91,4 +91,5 @@ Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de 
 Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: VWMbqQ5M/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
 Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: TDSMcGjY/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
 Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: SThMHvX/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
-Prompt: "Crea un entorno de fondo en 2Dque sea muy verde y lleno de naturaleza", ImgBB ID: PsYQXpqb/Crea-un-entorno-de-fondo-en-2-Dque-sea-muy-verde-y-lleno-de-naturaleza.jpg
+Prompt: "Crea un entorno de fondo en 2Dque sea muy verde y lleno de naturaleza", ImgBB ID: tMQKRsQ4/Crea-un-entorno-de-fondo-en-2-Dque-sea-muy-verde-y-lleno-de-naturaleza.jpg
+Prompt: "Crea un entorno de fondo en 2Dque sea muy verde y lleno de naturaleza", ImgBB ID: 844Z4fFy/Crea-un-entorno-de-fondo-en-2-Dque-sea-muy-verde-y-lleno-de-naturaleza.jpg
