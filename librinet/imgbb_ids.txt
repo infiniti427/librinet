@@ -85,3 +85,4 @@ Prompt: "In relevant color A Shakti in oil painting style as a single, continuou
 Prompt: "A symbolic representation of dreams transforming into opportunities, visualized as birds rising from ashes, set against a backdrop of hope and light breaking through darkness.", ImgBB ID: s9zKNDTQ/A-symbolic-representation-of-dreams-transforming-into-opportunities-visualized-as-birds-rising-from.jpg
 Prompt: "Atom", ImgBB ID: 4ZJDk6TZ/Atom.jpg
 Prompt: "Mike+cheap+ss", ImgBB ID: S7QvCWp8/Mike-cheap-ss.jpg
+Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: FktRVJLY/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
