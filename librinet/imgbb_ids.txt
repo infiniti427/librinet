@@ -86,3 +86,4 @@ Prompt: "A symbolic representation of dreams transforming into opportunities, vi
 Prompt: "Atom", ImgBB ID: 4ZJDk6TZ/Atom.jpg
 Prompt: "Mike+cheap+ss", ImgBB ID: S7QvCWp8/Mike-cheap-ss.jpg
 Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: FktRVJLY/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
+Prompt: "Crea un entorno de fondo en 2 dimensiones que sea muy verde y lleno de naturaleza", ImgBB ID: BHC3Gt4n/Crea-un-entorno-de-fondo-en-2-dimensiones-que-sea-muy-verde-y-lleno-de-naturaleza.jpg
