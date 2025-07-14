@@ -99,3 +99,4 @@ Prompt: "Crea un entorno de fondo en 2Dque sea muy verde y lleno de naturaleza",
 Prompt: "Crea un entorno de fondo en 2Dque sea muy verde y lleno de naturaleza", ImgBB ID: Zp9krwYh/Crea-un-entorno-de-fondo-en-2-Dque-sea-muy-verde-y-lleno-de-naturaleza.jpg
 Prompt: "Crea un entorno de fondo en 2D plano de suelo de naturaleza", ImgBB ID: Jw5HN5jt/Crea-un-entorno-de-fondo-en-2-D-plano-de-suelo-de-naturaleza.jpg
 Prompt: "Crea un entorno de fondo en 2D plano de suelo de naturaleza", ImgBB ID: W4gh2SYg/Crea-un-entorno-de-fondo-en-2-D-plano-de-suelo-de-naturaleza.jpg
+Prompt: "Crea un entorno de fondo en 2D plano ,de suelo plano de naturaleza", ImgBB ID: MxB7t4jz/Crea-un-entorno-de-fondo-en-2-D-plano-de-suelo-plano-de-naturaleza.jpg
