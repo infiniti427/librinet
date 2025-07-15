@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOGLIA TIEMPO</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* General table styles (for both municipality list and prediction table) */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            overflow: hidden; /* Ensures rounded corners apply to content */
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0; /* Light gray border */
+        }
+        th {
+            background-color: #3b82f6; /* Blue header */
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc; /* Lighter background for even rows */
+        }
+        tr:hover {
+            background-color: #e0f2fe; /* Light blue on hover */
+        }
+        .municipality-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .municipality-item:hover {
+            background-color: #e0f2fe; /* Light blue on hover */
+        }
+
+        /* Specific styles for the prediction table (from Nuevo Documento de texto.txt) */
+        .prediction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            overflow-x: auto; /* Allow horizontal scrolling for wide tables */
+            display: block; /* Make table a block to allow overflow-x */
+            white-space: nowrap; /* Prevent content from wrapping in cells */
+        }
+        .prediction-table th, .prediction-table td {
+            border: 2px solid #334155; /* Stronger borders for all cells */
+            padding: 10px;
+            text-align: center; /* Center text for data cells */
+            vertical-align: top; /* Align content to top for multi-line cells */
+            min-width: 80px; /* Minimum width for cells */
+        }
+        .prediction-table th {
+            background-color: #e2e8f0;
+            font-weight: 600;
+            color: #475569;
+            white-space: nowrap; /* Prevent header text from wrapping */
+        }
+        .temp-max-color {
+            color: #dc2626; /* Red color for max temperature, as per image */
+            font-weight: bold;
+        }
+        .temp-min-color {
+            color: #000080; /* Navy blue for min temperature */
+            font-weight: bold;
+        }
+        .sky-icon, .wind-icon {
+            width: 30px; /* Adjust size as needed */
+            height: 30px;
+            display: block;
+            margin: auto;
+        }
+        .estado-cielo-row td {
+            background-color: #95b6e9; /* User's requested color */
+            border: 2px solid #334155; /* Bold border */
+            font-weight: bold; /* Make content bold */
+        }
+        .estado-cielo-row .estado-cielo-label-cell {
+            background-color: #3b82f6; /* A slightly darker blue for the label cell */
+            color: white;
+            text-align: left; /* Align label to left */
+            font-weight: 600; /* Make label bold */
+        }
+        .humedad-relativa-row td {
+            background-color: #95b6e9; /* User's requested color */
+            border: 2px solid #334155; /* Bold border */
+            font-weight: bold; /* Make content bold */
+        }
+        .humedad-relativa-row .humedad-relativa-label-cell {
+            background-color: #3b82f6; /* A slightly darker blue for the label cell */
+            color: white;
+            text-align: left; /* Align label to left */
+            font-weight: 600; /* Make label bold */
+        }
+        .highlight {
+            text-decoration: underline; /* Underline the matching text */
+            font-weight: bold; /* Make it bold for better visibility */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen">
+
+    <div class="max-w-4xl w-full">
+        <!-- Added text above the main title -->
+        <p class="text-center text-gray-700 text-lg mb-2 hidden">HOLA , LA IP <span id="userIpAddress">Cargando...</span></p>
+        <p class="text-center text-gray-700 text-md mb-2 hidden" id="userLocation">
+            <span class="inline-block mr-2">📍</span>Cargando ubicación...
+        </p>
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-4 mt-4">
+            TOOGLIA TIEMPO
+        </h1>
+        
+        <!-- Button to link to the full version -->
+        <div class="text-center mb-8">
+            <a href="https://infiniti427.github.io/librinet/librinet/historia/tiempotooglia.es.html" target="_blank"
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                VERLA ENTERA
+            </a>
+        </div>
+
+        <!-- Container for Municipal Forecast (the only "Vista de Tooglia") -->
+        <div id="municipalitySectionContainer" class="card p-4 border-2 border-red-500 rounded-lg w-full">
+            <h2 class="text-2xl font-bold text-red-600 text-left mb-4">
+                Vista de Tooglia
+            </h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3" id="municipalResultTitle"></h2>
+            <p id="municipalForecastElaborated" class="text-gray-700 text-sm mt-4"></p>
+            <div id="municipalForecastOutput" class="overflow-x-auto rounded-xl bg-f8fafc border border-e2e8f0 p-5 min-h-[150px] mt-4">
+                <!-- Prediction table will be rendered here -->
+            </div>
+        </div>
+
+        <div id="loadingMessage" class="hidden flex items-center justify-center text-lg text-gray-700 mb-6">
+            <div class="loading-spinner mr-3"></div>
+            Cargando pronóstico...
+        </div>
+
+        <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline" id="errorText"></span>
+        </div>
+
+    </div>
+
+    <script>
+        // Tu clave API de AEMET
+        // ¡IMPORTANTE! Inserta tu clave API válida aquí.
+        const AEMET_API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb211bmlzdGF1cnNzMTk5MUBnbWFpbC5jb20iLCJqdGkiOiI2ZGEzNGZiOC0yNTE0LTQ1MWUtYWQwMy00MTc4ZGY0YzhkYjkiLCJpc3MiOiJBRU1FVCIsImlhdCI6MTc0MzcyMDA1NSwidXNlcklkIjoiNmRhMzRmYjgtMjUxNC00NTFlLWFkMDMtNDE3OGRmNGM4ZGI5Iiwicm9sZSI6IiJ9.I1peBYOx2c_Ko1hAcdxy6iFQI5ADnu9rAIl1gt2QQJo";
+        console.log("Using AEMET API Key:", AEMET_API_KEY);
+
+        const AEMET_BASE_URL = "https://opendata.aemet.es/opendata/api";
+
+        // Icon mappings (moved to top for global accessibility)
+        const skyStateIcons = {
+            "11": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/11.png", // Despejado
+            "11n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/11n.png", // Despejado noche
+            "12": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/12.png", // Poco nuboso
+            "12n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/12n.png", // Poco nuboso noche
+            "13": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/13.png", // Intervalos nubosos
+            "13n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/13n.png", // Intervalos nubosos noche
+            "14": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/14.png", // Nuboso
+            "14n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/14n.png", // Nuboso noche
+            "15": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/15.png", // Muy nuboso
+            "16": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/16.png", // Cubierto
+            "17": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/17.png", // Nubes altas
+            "17n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/17n.png", // Nubes altas noche
+            "43": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/43.png", // Intervalos nubosos con lluvia escasa
+            "43n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/43n.png", // Intervalos nubosos con lluvia escasa noche
+            "44": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/44.png", // Nuboso con lluvia escasa
+            "44n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/44n.png", // Nuboso con lluvia escasa noche
+            "45": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/45.png", // Muy nuboso con lluvia escasa
+            "46": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/46.png", // Cubierto con lluvia escasa
+            "23": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/23.png", // Intervalos nubosos con lluvia
+            "23n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/23n.png", // Intervalos nubosos con lluvia noche
+            "24": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/24.png", // Nuboso con lluvia
+            "24n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/24n.png", // Nuboso con lluvia noche
+            "25": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/25.png", // Muy nuboso con lluvia
+            "26": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/26.png", // Cubierto con lluvia
+            "71": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/71.png", // Intervalos nubosos con nieve escasa
+            "71n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/71n.png", // Intervalos nubosos con nieve escasa noche
+            "72": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/72.png", // Nuboso con nieve escasa
+            "72n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/72n.png", // Nuboso con nieve escasa noche
+            "73": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/73.png", // Muy nuboso con nieve escasa
+            "74": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/74.png", // Cubierto con nieve escasa
+            "33": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/33.png", // Intervalos nubosos con nieve
+            "33n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/33n.png", // Intervalos nubosos con nieve noche
+            "34": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/34.png", // Nuboso con nieve
+            "34n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/34n.png", // Nuboso con nieve noche
+            "35": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/35.png", // Muy nuboso con nieve
+            "36": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/36.png", // Cubierto con nieve
+            "51": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/51.png", // Intervalos nubosos con tormenta
+            "51n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/51n.png", // Intervalos nubosos con tormenta noche
+            "52": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/52.png", // Nuboso con tormenta
+            "52n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/52n.png", // Nuboso con tormenta noche
+            "53": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/53.png", // Muy nuboso con tormenta
+            "54": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/54.png", // Cubierto con tormenta
+            "61": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/61.png", // Intervalos nubosos con tormenta y lluvia escasa
+            "61n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/61n.png", // Intervalos nubosos con tormenta y lluvia escasa noche
+            "62": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/62.png", // Nuboso con tormenta y lluvia escasa
+            "62n": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/62n.png", // Nuboso con tormenta y lluvia escasa noche
+            "63": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/63.png", // Muy nuboso con tormenta y lluvia escasa
+            "64": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/64.png", // Cubierto con tormenta y lluvia escasa
+            "81": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/81.png", // Niebla
+            "82": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/82.png", // Bruma
+            "83": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/83.png"  // Calima
+        };
+
+        const windIcons = {
+            "N": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/N.png",   // Norte
+            "NE": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/NE.png", // Nordeste
+            "E": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/E.png",   // Este
+            "SE": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/SE.png", // Sudeste
+            "S": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/S.png",   // Sur
+            "SO": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/SO.png", // Suroeste
+            "O": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/O.png",   // Oeste
+            "NO": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/NO.png", // Noroeste
+            "C": "https://www.aemet.es/imagenes_gcd/_iconos_municipios/C.png"    // En calma
+        };
+
+        // Global variables for municipalities data
+        let allMunicipalitiesData = [];
+        const municipalitiesMap = new Map(); // Para mapear nombre -> {id, nombre, provincia}
+
+        // Elementos de la interfaz - Generales
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const userIpAddressElement = document.getElementById('userIpAddress');
+        const userLocationElement = document.getElementById('userLocation');
+
+        // Elementos de la interfaz - Municipal
+        const municipalitySectionContainer = document.getElementById('municipalitySectionContainer');
+        const municipalityInput = document.createElement('input'); // Dummy element for internal logic
+        const municipalityList = document.createElement('div'); // Dummy element for internal logic
+        
+        const municipalResultTitle = document.getElementById('municipalResultTitle');
+        const municipalForecastElaborated = document.getElementById('municipalForecastElaborated'); 
+        const municipalForecastOutput = document.getElementById('municipalForecastOutput');
+
+
+        /**
+         * Muestra un mensaje de error en la interfaz de usuario.
+         * @param {string} message - El mensaje de error a mostrar.
+         */
+        function displayError(message) {
+            if (message.includes('No se pudo cargar la lista de municipios')) {
+                errorText.textContent = 'Error';
+            } else {
+                errorText.textContent = message;
+            }
+            errorMessage.classList.remove('hidden');
+        }
+
+        /**
+         * Oculta el mensaje de error.
+         */
+        function hideError() {
+            errorMessage.classList.add('hidden');
+            errorText.textContent = '';
+        }
+
+        /**
+         * Muestra u oculta el indicador de carga y deshabilita/habilita botones.
+         * @param {boolean} show - Verdadero para mostrar, falso para ocultar.
+         */
+        function toggleLoading(show) {
+            // No hay botones para deshabilitar/habilitar en esta versión simplificada
+            if (show) {
+                loadingMessage.classList.remove('hidden');
+            } else {
+                loadingMessage.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Formatea la fecha para una mejor visualización.
+         * @param {string} dateString - La cadena de fecha en formato ISO 8601 (YYYY-MM-DD).
+         * @returns {string} La fecha formateada.
+         */
+        function formatForecastDate(dateString) {
+            const date = new Date(dateString);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        /**
+         * Helper to get value for a specific period, or default
+         * @param {Array} dataArray - Array of data for different periods.
+         * @param {string} period - The period string (e.g., "00-12", "12-24").
+         * @param {string} field - The field name to extract (e.g., 'value', 'descripcion').
+         * @param {string} defaultVal - Default value if not found.
+         * @returns {string} The value for the period or default.
+         */
+        function getPeriodValue(dataArray, period, field = 'value', defaultVal = '') {
+            if (!Array.isArray(dataArray)) {
+                console.log(`getPeriodValue: dataArray no es un array para el período ${period} y campo ${field}.`);
+                return defaultVal;
+            }
+            const entry = dataArray.find(item => item.periodo === period);
+            if (entry && (entry[field] !== undefined && entry[field] !== null && entry[field] !== "")) {
+                return entry[field];
+            } else {
+                console.log(`getPeriodValue: Valor no encontrado para el período ${period} y campo ${field}. Data:`, dataArray);
+                return defaultVal;
+            }
+        }
+
+        /**
+         * Helper to get hourly data for a specific hour
+         * @param {Array} hourlyDataArray - Array of hourly data.
+         * @param {number} hour - The hour to fetch data for (e.g., 6, 12, 18, 24).
+         * @param {string} defaultVal - Default value if not found.
+         * @returns {string} The hourly value or default.
+         */
+        function getHourlyValue(hourlyDataArray, hour, defaultVal = '') {
+            if (!Array.isArray(hourlyDataArray)) {
+                console.log(`getHourlyValue: hourlyDataArray no es un array para la hora ${hour}.`);
+                return defaultVal;
+            }
+            const entry = hourlyDataArray.find(item => parseInt(item.hora) === hour); // Ensure hour is parsed as int
+            if (entry && (entry.value !== undefined && entry.value !== null && entry.value !== "")) {
+                return entry.value;
+            } else {
+                console.log(`getHourlyValue: Valor no encontrado para la hora ${hour}. Data:`, hourlyDataArray);
+                return defaultVal;
+            }
+        }
+
+        /**
+         * Resalta la parte de una cadena que coincide con un término de búsqueda.
+         * @param {string} text - El texto original.
+         * @param {string} searchTerm - El término de búsqueda.
+         * @returns {string} El texto con la parte coincidente en negrita (HTML).
+         */
+        function highlightMatch(text, searchTerm) {
+            if (!searchTerm) {
+                return text;
+            }
+            const lowerText = text.toLowerCase();
+            const lowerSearchTerm = searchTerm.toLowerCase();
+            const index = lowerText.indexOf(lowerSearchTerm);
+
+            if (index === -1) {
+                return text;
+            }
+
+            const before = text.substring(0, index);
+            const match = text.substring(index, index + searchTerm.length);
+            const after = text.substring(index + searchTerm.length);
+
+            return `${before}<span class="highlight">${match}</span>${after}`;
+        }
+
+        /**
+         * Renderiza la lista de municipios en el contenedor.
+         * NOTA: Esta función ya no se usa para mostrar la lista al usuario,
+         * pero es necesaria para poblar el mapa de municipios internamente.
+         * @param {Array<Object>} municipalitiesToRender - Array de objetos municipio a renderizar.
+         */
+        function renderMunicipalitiesTable(municipalitiesToRender) {
+            // This function is no longer used for direct rendering to the user.
+            // Its purpose is to process data for the internal search map.
+            if (!Array.isArray(municipalitiesToRender) || municipalitiesToRender.length === 0) {
+                return;
+            }
+        }
+
+        /**
+         * Renderiza los datos de predicción de un municipio en una tabla detallada.
+         * @param {Object} data - El objeto de datos de predicción del municipio.
+         */
+        function renderPredictionTable(data) {
+            if (!data || !data.prediccion || !Array.isArray(data.prediccion.dia) || data.prediccion.dia.length === 0) {
+                municipalForecastOutput.innerHTML = 'No se encontraron datos de predicción detallados para este municipio o el formato no es el esperado.';
+                return;
+            }
+
+            municipalResultTitle.textContent = `Predicción para ${data.nombre || 'N/A'}, ${data.provincia || 'N/A'}`;
+
+            let tableHtml = `
+                <table class="prediction-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2"></th>
+            `;
+
+            // Periods configuration based on day index
+            const dayPeriodsConfig = [
+                { periods: ["06-12", "12-18", "18-24"] }, // Day 0
+                { periods: ["00-06", "06-12", "12-18", "18-24"] }, // Day 1
+                { periods: ["00-12", "12-24"] }, // Day 2 onwards (default)
+            ];
+
+            // First Header Row: Days
+            data.prediccion.dia.forEach((day, index) => {
+                const date = new Date(day.fecha);
+                const dayOfWeek = date.toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', ''); // e.g., "lun"
+                const dayOfMonth = date.getDate();
+                tableHtml += `<th colspan="${dayPeriodsConfig[Math.min(index, 2)].periods.length}" class="text-center">${dayOfWeek}. ${dayOfMonth}</th>`;
+            });
+            tableHtml += `</tr>`;
+
+            // Second Header Row: Periods
+            tableHtml += `<tr>`; // No empty corner, as the first th spans two rows
+            data.prediccion.dia.forEach((day, index) => {
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    tableHtml += `<th class="text-center">${period}</th>`;
+                });
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            // --- Data Rows ---
+
+            // Row: Temperatura mínima y máxima (°C)
+            tableHtml += `<tr><td class="font-semibold">Temperatura mínima y máxima (°C)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                const tempMin = day.temperatura?.minima || 'N/A';
+                const tempMax = day.temperatura?.maxima || 'N/A';
+                tableHtml += `<td colspan="${dayPeriodsConfig[Math.min(index, 2)].periods.length}"><span class="temp-min-color">${tempMin}</span> / <span class="temp-max-color">${tempMax}</span></td>`;
+            });
+            tableHtml += `</tr>`;
+
+            // NEW ROW: Temperatura (horaria)
+            tableHtml += `<tr><td class="font-semibold">Temperatura (horaria) (°C)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                console.log(`Temperatura (horaria) para el día ${day.fecha}:`, day.temperatura?.dato);
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    // Map period to an hour to fetch from hourly data
+                    let hourlyValue = '';
+                    switch (period) {
+                        case '00-06': hourlyValue = getHourlyValue(day.temperatura?.dato, 6); break;
+                        case '06-12': hourlyValue = getHourlyValue(day.temperatura?.dato, 12); break;
+                        case '12-18': hourlyValue = getHourlyValue(day.temperatura?.dato, 18); break;
+                        case '18-24': hourlyValue = getHourlyValue(day.temperatura?.dato, 24); break;
+                        case '00-12': hourlyValue = getHourlyValue(day.temperatura?.dato, 12); break;
+                        case '12-24': hourlyValue = getHourlyValue(day.temperatura?.dato, 24); break;
+                        default: console.log(`Periodo no mapeado para temperatura horaria: ${period}`);
+                    }
+                    tableHtml += `<td>${hourlyValue}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Sensación térmica mínima y máxima (°C)
+            tableHtml += `<tr><td class="font-semibold">Sensación térmica mínima y máxima (°C)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                const sensMin = day.sensTermica?.minima || 'N/A';
+                const sensMax = day.sensTermica?.maxima || 'N/A';
+                tableHtml += `<td colspan="${dayPeriodsConfig[Math.min(index, 2)].periods.length}"><span class="temp-min-color">${sensMin}</span> / <span class="temp-max-color">${sensMax}</span></td>`;
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Humedad relativa mínima y máxima (%) - Now with specific styling
+            tableHtml += `<tr class="humedad-relativa-row"><td class="humedad-relativa-label-cell">Humedad relativa mínima y máxima (%)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                const humMin = day.humedadRelativa?.minima || 'N/A';
+                const humMax = day.humedadRelativa?.maxima || 'N/A';
+                tableHtml += `<td colspan="${dayPeriodsConfig[Math.min(index, 2)].periods.length}">${humMin} / ${humMax}</td>`;
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Probabilidad de precipitación (%)
+            tableHtml += `<tr><td class="font-semibold">Probabilidad de precipitación (%)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                console.log(`Probabilidad de precipitación para el día ${day.fecha}:`, day.probPrecipitacion);
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    const prob = getPeriodValue(day.probPrecipitacion, period, 'value', '');
+                    tableHtml += `<td>${prob !== '' ? `${prob}%` : ''}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Cota de nieve a nivel de provincia (m)
+            tableHtml += `<tr><td class="font-semibold">Cota de nieve a nivel de provincia (m)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    const cota = getPeriodValue(day.cotaNieveProv, period, 'value', '');
+                    tableHtml += `<td>${cota}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Estado del Cielo row in tbody with new styling
+            tableHtml += `<tr class="estado-cielo-row"><td class="estado-cielo-label-cell">Estado del Cielo</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    const estadoCode = getPeriodValue(day.estadoCielo, period, 'value', '');
+                    const iconUrl = skyStateIcons[estadoCode];
+                    const estadoDesc = getPeriodValue(day.estadoCielo, period, 'descripcion', 'N/A'); // Get description for alt text
+                    
+                    if (iconUrl) {
+                        tableHtml += `<td><img src="${iconUrl}" alt="Icono del cielo: ${estadoDesc}" class="sky-icon"></td>`;
+                    } else {
+                        tableHtml += `<td>${estadoDesc}</td>`; // Fallback to description if icon not found
+                    }
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Dirección y velocidad del viento (km/h)
+            tableHtml += `<tr><td class="font-semibold">Dirección y velocidad del viento (km/h)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    const dir = getPeriodValue(day.viento, period, 'direccion', '');
+                    const vel = getPeriodValue(day.viento, period, 'velocidad', '');
+                    const windIconUrl = windIcons[dir];
+                    
+                    if (windIconUrl) {
+                        tableHtml += `<td><img src="${windIconUrl}" alt="Viento: ${dir}" class="wind-icon"> ${vel !== '' ? vel : ''}</td>`;
+                    } else {
+                        tableHtml += `<td>${dir} ${vel !== '' ? vel : ''}</td>`;
+                    }
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Racha máxima (km/h)
+            tableHtml += `<tr><td class="font-semibold">Racha máxima (km/h)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    const racha = getPeriodValue(day.rachaMax, period, 'value', '');
+                    tableHtml += `<td>${racha}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Sensación térmica (horaria)
+            tableHtml += `<tr><td class="font-semibold">Sensación térmica (horaria)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                console.log(`Sensación térmica (horaria) para el día ${day.fecha}:`, day.sensTermica?.dato);
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    let hourlyValue = '';
+                    switch (period) {
+                        case '00-06': hourlyValue = getHourlyValue(day.sensTermica?.dato, 6); break;
+                        case '06-12': hourlyValue = getHourlyValue(day.sensTermica?.dato, 12); break;
+                        case '12-18': hourlyValue = getHourlyValue(day.sensTermica?.dato, 18); break;
+                        case '18-24': hourlyValue = getHourlyValue(day.sensTermica?.dato, 24); break;
+                        case '00-12': hourlyValue = getHourlyValue(day.sensTermica?.dato, 12); break;
+                        case '12-24': hourlyValue = getHourlyValue(day.sensTermica?.dato, 24); break;
+                        default: console.log(`Periodo no mapeado para sensación térmica horaria: ${period}`);
+                    }
+                    tableHtml += `<td>${hourlyValue}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Humedad relativa (horaria)
+            tableHtml += `<tr><td class="font-semibold">Humedad relativa (horaria)</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                console.log(`Humedad relativa (horaria) para el día ${day.fecha}:`, day.humedadRelativa?.dato);
+                dayPeriodsConfig[Math.min(index, 2)].periods.forEach(period => {
+                    let hourlyValue = '';
+                    switch (period) {
+                        case '00-06': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 6); break;
+                        case '06-12': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 12); break;
+                        case '12-18': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 18); break;
+                        case '18-24': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 24); break;
+                        case '00-12': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 12); break;
+                        case '12-24': hourlyValue = getHourlyValue(day.humedadRelativa?.dato, 24); break;
+                        default: console.log(`Periodo no mapeado para humedad relativa horaria: ${period}`);
+                    }
+                    tableHtml += `<td>${hourlyValue}</td>`;
+                });
+            });
+            tableHtml += `</tr>`;
+
+            // Row: Índice ultravioleta máximo
+            tableHtml += `<tr><td class="font-semibold">Índice ultravioleta máximo</td>`;
+            data.prediccion.dia.forEach((day, index) => {
+                console.log(`Índice ultravioleta máximo para el día ${day.fecha}:`, day.uvMax);
+                const uvMax = day.uvMax !== undefined && day.uvMax !== null ? day.uvMax : '';
+                tableHtml += `<td colspan="${dayPeriodsConfig[Math.min(index, 2)].periods.length}">${uvMax}</td>`;
+            });
+            tableHtml += `</tr>`;
+
+            tableHtml += `</tbody></table>`;
+            municipalForecastOutput.innerHTML = tableHtml;
+        }
+
+
+        /**
+         * Obtiene y muestra el pronóstico para un municipio específico en formato de tabla.
+         * @param {string} municipalityId - El ID del municipio de AEMET.
+         * @param {string} municipalityName - El nombre del municipio.
+         * @returns {Promise<boolean>} True if forecast was successfully displayed, false otherwise.
+         */
+        async function getMunicipalForecastTable(municipalityId, municipalityName) {
+            hideError();
+            toggleLoading(true);
+            municipalitySectionContainer.classList.remove('hidden'); // Ensure this container is visible
+            
+            municipalForecastOutput.innerHTML = `<p class="text-center text-gray-600 flex items-center justify-center">
+                <div class="loading-spinner mr-2"></div> Cargando pronóstico para ${municipalityName}...
+            </p>`;
+            municipalResultTitle.textContent = `Predicción para ${municipalityName}`;
+            
+
+            try {
+                if (!AEMET_API_KEY) {
+                    throw new Error('API Key no proporcionada. Por favor, inserta tu clave API de AEMET.');
+                }
+
+                // Step 1: Get the URL for the forecast data
+                const initialUrl = `${AEMET_BASE_URL}/prediccion/especifica/municipio/diaria/${municipalityId}?api_key=${AEMET_API_KEY}`;
+                const response = await fetch(initialUrl);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error ${response.status}: ${errorData.descripcion || 'No se pudo obtener la URL de los datos.'}`);
+                }
+
+                const dataUrlResponse = await response.json();
+
+                if (!dataUrlResponse.datos) {
+                    console.error("AEMET API response missing 'datos' field:", dataUrlResponse);
+                    throw new Error(`No se encontró la URL de los datos del pronóstico en la respuesta de AEMET para el municipio ${municipalityName}. Esto puede indicar que no hay datos disponibles, un problema temporal con la API, o que tu clave API de AEMET es inválida o ha caducado.`);
+                }
+
+                // Display the elaboration date
+                if (dataUrlResponse.elaborado && dataUrlResponse.elaborado.fecha && dataUrlResponse.elaborado.hora) {
+                    const elaboratedDate = new Date(`${dataUrlResponse.elaborado.fecha}T${dataUrlResponse.elaborado.hora}`);
+                    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    municipalForecastElaborated.textContent = `Elaborado el: ${elaboratedDate.toLocaleDateString('es-ES', options)}`;
+                    municipalForecastElaborated.classList.remove('hidden');
+                } else {
+                    municipalForecastElaborated.classList.add('hidden');
+                }
+
+                // Step 2: Get the forecast data from the provided URL
+                const forecastDataResponse = await fetch(dataUrlResponse.datos);
+
+                if (!forecastDataResponse.ok) {
+                    throw new Error(`Error al obtener los datos del pronóstico desde la URL de AEMET: ${forecastDataResponse.statusText}`);
+                }
+
+                const forecastData = await forecastDataResponse.json();
+
+                // Render the prediction data as a table
+                renderPredictionTable(forecastData[0]); // AEMET returns an array, take the first element for municipality forecast
+
+            } catch (error) {
+                console.error(`Error al obtener el pronóstico para ${municipalityName}:`, error);
+                municipalForecastOutput.innerHTML = `<p class="text-red-500 text-center">Error al cargar el pronóstico: ${error.message}</p>`;
+                municipalForecastElaborated.classList.add('hidden');
+                displayError(`No se pudo obtener el pronóstico para ${municipalityName}. Por favor, inténtalo de nuevo más tarde: ${error.message}`);
+                return false; // Indicate failure
+            } finally {
+                toggleLoading(false);
+            }
+            return true; // Indicate success
+        }
+
+
+        /**
+         * Carga todos los municipios y los guarda en la variable global.
+         */
+        async function loadAllMunicipalities() {
+            try {
+                if (!AEMET_API_KEY) {
+                    throw new Error('API Key no proporcionada. Por favor, inserta tu clave API de AEMET.');
+                }
+
+                const initialUrl = `${AEMET_BASE_URL}/maestro/municipios?api_key=${AEMET_API_KEY}`;
+                console.log("Fetching all municipalities from URL:", initialUrl);
+                const response = await fetch(initialUrl);
+
+                if (!response.ok) {
+                    const errorResponseContent = await response.text();
+                    let errorMessageDetail = `Error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorJson = JSON.parse(errorResponseContent);
+                        if (errorJson && errorJson.descripcion) {
+                            errorMessageDetail = errorJson.descripcion;
+                        }
+                    } catch (e) {
+                        errorMessageDetail = `Error ${response.status}: ${errorResponseContent}`;
+                    }
+                    throw new Error(errorMessageDetail);
+                }
+
+                const dataUrlResponse = await response.json();
+
+                if (!dataUrlResponse.datos) {
+                    console.error("AEMET API response missing 'datos' field for municipality list:", dataUrlResponse);
+                    throw new Error('No se encontró la URL de los datos de municipios en la respuesta de AEMET. Esto puede indicar que la API no tiene datos disponibles en este momento o que la clave API es inválida.');
+                }
+
+                const municipalitiesDataResponse = await fetch(dataUrlResponse.datos);
+
+                if (!municipalitiesDataResponse.ok) {
+                    throw new Error(`Error al obtener los datos de municipios desde la URL de AEMET: ${municipalitiesDataResponse.statusText}`);
+                }
+
+                const arrayBuffer = await municipalitiesDataResponse.arrayBuffer();
+                const decoder = new TextDecoder('iso-8859-1');
+                const decodedText = decoder.decode(arrayBuffer);
+                allMunicipalitiesData = JSON.parse(decodedText); // Save the complete list
+
+                municipalitiesMap.clear();
+                allMunicipalitiesData.forEach(municipio => {
+                    const nombreMunicipio = municipio.nombre || 'Nombre Desconocido';
+                    municipalitiesMap.set(nombreMunicipio.toLowerCase(), { id: municipio.id, nombre: nombreMunicipio, provincia: municipio.provincia || 'N/D' });
+                });
+
+                console.log("Municipality list populated with", allMunicipalitiesData.length, "municipalities.");
+            } catch (error) {
+                console.error(`Error al cargar los municipios:`, error);
+                let userFriendlyMessage = `No se pudo cargar la lista de municipios.`;
+                if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                    userFriendlyMessage += ` Esto suele indicar un problema de conexión a internet o que la URL de la API es inaccesible.`;
+                } else if (error.message.includes('API Key no proporcionada')) {
+                    userFriendlyMessage += ` Por favor, asegúrate de haber insertado tu clave API de AEMET.`;
+                } else {
+                    userFriendlyMessage += ` Error: ${error.message}.`;
+                }
+                userFriendlyMessage += ` Por favor, verifica tu conexión a internet o tu clave API de AEMET.`;
+
+                displayError(userFriendlyMessage);
+            }
+        }
+
+        /**
+         * Fetches the user's IP address and displays it, then uses the IP to get and display location (city, region).
+         * After getting the location, it attempts to automatically fetch and display the municipal forecast.
+         */
+        async function fetchUserIpAddressAndMunicipalForecast() {
+            try {
+                const response = await fetch('https://ipinfo.io/json');
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(`Error de la API: ${data.error.message || 'Desconocido'}`);
+                }
+
+                userIpAddressElement.textContent = data.ip || 'No disponible';
+                const city = data.city || '';
+                const region = data.region || '';
+
+                let locationText = '';
+                if (city && region) {
+                    locationText = `Ciudad: ${city}, Comunidad Autónoma: ${region}`;
+                } else if (city) {
+                    locationText = `Ciudad: ${city}`;
+                } else if (region) {
+                    locationText = `Comunidad Autónoma: ${region}`;
+                } else {
+                    locationText = 'Ubicación no disponible.';
+                }
+                userLocationElement.innerHTML = `<span class="inline-block mr-2">📍</span>${locationText}`;
+
+                let municipalForecastAttempted = false;
+
+                if (city && allMunicipalitiesData.length > 0) {
+                    let foundMunicipality = municipalitiesMap.get(city.toLowerCase());
+                    if (!foundMunicipality && region) {
+                        foundMunicipality = allMunicipalitiesData.find(m =>
+                            (m.provincia || '').toLowerCase() === region.toLowerCase()
+                        );
+                        if (foundMunicipality) {
+                            console.log(`Found municipality by region: ${foundMunicipality.nombre} (from IP region: ${region})`);
+                        }
+                    }
+
+                    if (foundMunicipality) {
+                        const municipalityId = (typeof foundMunicipality.id === 'string' && foundMunicipality.id.startsWith('id'))
+                                            ? foundMunicipality.id.substring(2)
+                                            : (foundMunicipality.id || '');
+                        const municipalityName = foundMunicipality.nombre || city;
+
+                        if (municipalityId) {
+                            municipalForecastAttempted = true;
+                            await getMunicipalForecastTable(municipalityId, municipalityName);
+                        }
+                    }
+                }
+
+                if (!municipalForecastAttempted) {
+                    // If no municipal forecast was attempted or found, show a message in the municipal container
+                    municipalForecastOutput.innerHTML = `<p class="text-gray-600 text-center">No se pudo obtener el pronóstico municipal para su ubicación actual.</p>`;
+                    municipalResultTitle.textContent = `Pronóstico no disponible`;
+                    municipalForecastElaborated.classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error('Error al obtener la dirección IP y ubicación o el pronóstico:', error);
+                userIpAddressElement.textContent = 'Error al cargar IP.';
+                userLocationElement.innerHTML = `<span class="inline-block mr-2">📍</span>Error al cargar ubicación.`;
+                displayError(`No se pudo obtener la dirección IP y ubicación o el pronóstico municipal. Por favor, inténtalo de nuevo. (${error.message})`);
+                
+                // Ensure the municipal container is visible to show the error
+                municipalitySectionContainer.classList.remove('hidden');
+                municipalForecastOutput.innerHTML = `<p class="text-red-500 text-center">Error al cargar el pronóstico municipal: ${error.message}</p>`;
+                municipalResultTitle.textContent = `Error al cargar pronóstico`;
+                municipalForecastElaborated.classList.add('hidden');
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAllMunicipalities(); // Load municipalities first
+            await fetchUserIpAddressAndMunicipalForecast(); // Then fetch IP and attempt municipal forecast
+        });
+        
+    </script>
+</body>
+</html>
