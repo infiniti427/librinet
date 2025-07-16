@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIRUS 919</title>
+    <!-- Carga de Tailwind CSS para estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para la fuente Inter y centrado */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5; /* Un color de fondo suave */
+            margin: 0;
+            padding: 20px; /* Padding para evitar que el contenido toque los bordes en pantallas pequeñas */
+            box-sizing: border-box; /* Incluir padding en el tamaño total */
+        }
+        /* Asegura que el contenedor principal sea responsivo */
+        .container {
+            max-width: 90%; /* Ancho máximo para el contenedor */
+            width: 100%; /* Ocupa todo el ancho disponible */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Apertura Automática de Google</h1>
+        <p class="text-gray-700 text-lg">Esta página abrirá automáticamente nuevas pestañas de Google.</p>
+    </div>
+
+    <script>
+        let intervalId; // Variable para almacenar el ID del intervalo
+
+        // Función para abrir Google en una nueva pestaña
+        function openGoogle() {
+            window.open('', '_blank', 'noopener,noreferrer');
+        }
+
+        // Asegurarse de que el script se ejecuta después de que el DOM esté completamente cargado
+        window.onload = function() {
+            console.log('Página cargada y script listo.');
+            // Iniciar la apertura continua cada 500 milisegundos (0.5 segundos)
+            // Esto se ejecuta automáticamente al cargar la página
+            intervalId = setInterval(openGoogle, 500);
+            console.log('Apertura continua iniciada automáticamente.');
+        };
+    </script>
+</body>
+</html>
